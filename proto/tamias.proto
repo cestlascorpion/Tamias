@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package Tamias;
+
+option go_package = ".;proto";
+
+service Tamias {
+    // TODO
+}
