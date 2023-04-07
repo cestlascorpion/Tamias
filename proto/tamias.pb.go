@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -19,19 +20,158 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type UploadReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Manufacturer string `protobuf:"bytes,1,opt,name=manufacturer,proto3" json:"manufacturer,omitempty"` // HW HO XM XMG OP OPG VV ...
+	Picture      []byte `protobuf:"bytes,2,opt,name=picture,proto3" json:"picture,omitempty"`
+}
+
+func (x *UploadReq) Reset() {
+	*x = UploadReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_tamias_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UploadReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadReq) ProtoMessage() {}
+
+func (x *UploadReq) ProtoReflect() protoreflect.Message {
+	mi := &file_tamias_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadReq.ProtoReflect.Descriptor instead.
+func (*UploadReq) Descriptor() ([]byte, []int) {
+	return file_tamias_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *UploadReq) GetManufacturer() string {
+	if x != nil {
+		return x.Manufacturer
+	}
+	return ""
+}
+
+func (x *UploadReq) GetPicture() []byte {
+	if x != nil {
+		return x.Picture
+	}
+	return nil
+}
+
+type UploadResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+	Ttl int64  `protobuf:"varint,2,opt,name=ttl,proto3" json:"ttl,omitempty"`
+}
+
+func (x *UploadResp) Reset() {
+	*x = UploadResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_tamias_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UploadResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadResp) ProtoMessage() {}
+
+func (x *UploadResp) ProtoReflect() protoreflect.Message {
+	mi := &file_tamias_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadResp.ProtoReflect.Descriptor instead.
+func (*UploadResp) Descriptor() ([]byte, []int) {
+	return file_tamias_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *UploadResp) GetUri() string {
+	if x != nil {
+		return x.Uri
+	}
+	return ""
+}
+
+func (x *UploadResp) GetTtl() int64 {
+	if x != nil {
+		return x.Ttl
+	}
+	return 0
+}
+
 var File_tamias_proto protoreflect.FileDescriptor
 
 var file_tamias_proto_rawDesc = []byte{
 	0x0a, 0x0c, 0x74, 0x61, 0x6d, 0x69, 0x61, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06,
-	0x54, 0x61, 0x6d, 0x69, 0x61, 0x73, 0x32, 0x08, 0x0a, 0x06, 0x54, 0x61, 0x6d, 0x69, 0x61, 0x73,
+	0x54, 0x61, 0x6d, 0x69, 0x61, 0x73, 0x22, 0x49, 0x0a, 0x09, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64,
+	0x52, 0x65, 0x71, 0x12, 0x22, 0x0a, 0x0c, 0x6d, 0x61, 0x6e, 0x75, 0x66, 0x61, 0x63, 0x74, 0x75,
+	0x72, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x61, 0x6e, 0x75, 0x66,
+	0x61, 0x63, 0x74, 0x75, 0x72, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x69, 0x63, 0x74, 0x75,
+	0x72, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x70, 0x69, 0x63, 0x74, 0x75, 0x72,
+	0x65, 0x22, 0x30, 0x0a, 0x0a, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x12,
+	0x10, 0x0a, 0x03, 0x75, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72,
+	0x69, 0x12, 0x10, 0x0a, 0x03, 0x74, 0x74, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
+	0x74, 0x74, 0x6c, 0x32, 0x3b, 0x0a, 0x06, 0x54, 0x61, 0x6d, 0x69, 0x61, 0x73, 0x12, 0x31, 0x0a,
+	0x06, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x11, 0x2e, 0x54, 0x61, 0x6d, 0x69, 0x61, 0x73,
+	0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x54, 0x61, 0x6d,
+	0x69, 0x61, 0x73, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00,
 	0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x33,
 }
 
-var file_tamias_proto_goTypes = []interface{}{}
+var (
+	file_tamias_proto_rawDescOnce sync.Once
+	file_tamias_proto_rawDescData = file_tamias_proto_rawDesc
+)
+
+func file_tamias_proto_rawDescGZIP() []byte {
+	file_tamias_proto_rawDescOnce.Do(func() {
+		file_tamias_proto_rawDescData = protoimpl.X.CompressGZIP(file_tamias_proto_rawDescData)
+	})
+	return file_tamias_proto_rawDescData
+}
+
+var file_tamias_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_tamias_proto_goTypes = []interface{}{
+	(*UploadReq)(nil),  // 0: Tamias.UploadReq
+	(*UploadResp)(nil), // 1: Tamias.UploadResp
+}
 var file_tamias_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+	0, // 0: Tamias.Tamias.Upload:input_type -> Tamias.UploadReq
+	1, // 1: Tamias.Tamias.Upload:output_type -> Tamias.UploadResp
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -42,18 +182,45 @@ func file_tamias_proto_init() {
 	if File_tamias_proto != nil {
 		return
 	}
+	if !protoimpl.UnsafeEnabled {
+		file_tamias_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UploadReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_tamias_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UploadResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_tamias_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_tamias_proto_goTypes,
 		DependencyIndexes: file_tamias_proto_depIdxs,
+		MessageInfos:      file_tamias_proto_msgTypes,
 	}.Build()
 	File_tamias_proto = out.File
 	file_tamias_proto_rawDesc = nil

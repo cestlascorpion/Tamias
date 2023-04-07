@@ -5,5 +5,15 @@ package Tamias;
 option go_package = ".;proto";
 
 service Tamias {
-    // TODO
+  rpc Upload(UploadReq) returns (UploadResp) {}
+}
+
+message UploadReq {
+  string manufacturer = 1; // HW HO XM XMG OP OPG VV ...
+  bytes picture = 2;
+}
+
+message UploadResp {
+  string uri = 1;
+  int64 ttl = 2;
 }

@@ -7,7 +7,10 @@
 package proto
 
 import (
+	context "context"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -15,12 +18,15 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-const ()
+const (
+	Tamias_Upload_FullMethodName = "/Tamias.Tamias/Upload"
+)
 
 // TamiasClient is the client API for Tamias service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TamiasClient interface {
+	Upload(ctx context.Context, in *UploadReq, opts ...grpc.CallOption) (*UploadResp, error)
 }
 
 type tamiasClient struct {
@@ -31,10 +37,20 @@ func NewTamiasClient(cc grpc.ClientConnInterface) TamiasClient {
 	return &tamiasClient{cc}
 }
 
+func (c *tamiasClient) Upload(ctx context.Context, in *UploadReq, opts ...grpc.CallOption) (*UploadResp, error) {
+	out := new(UploadResp)
+	err := c.cc.Invoke(ctx, Tamias_Upload_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TamiasServer is the server API for Tamias service.
 // All implementations must embed UnimplementedTamiasServer
 // for forward compatibility
 type TamiasServer interface {
+	Upload(context.Context, *UploadReq) (*UploadResp, error)
 	mustEmbedUnimplementedTamiasServer()
 }
 
@@ -42,6 +58,9 @@ type TamiasServer interface {
 type UnimplementedTamiasServer struct {
 }
 
+func (UnimplementedTamiasServer) Upload(context.Context, *UploadReq) (*UploadResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
 func (UnimplementedTamiasServer) mustEmbedUnimplementedTamiasServer() {}
 
 // UnsafeTamiasServer may be embedded to opt out of forward compatibility for this service.
@@ -55,13 +74,36 @@ func RegisterTamiasServer(s grpc.ServiceRegistrar, srv TamiasServer) {
 	s.RegisterService(&Tamias_ServiceDesc, srv)
 }
 
+func _Tamias_Upload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TamiasServer).Upload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tamias_Upload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TamiasServer).Upload(ctx, req.(*UploadReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Tamias_ServiceDesc is the grpc.ServiceDesc for Tamias service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Tamias_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "Tamias.Tamias",
 	HandlerType: (*TamiasServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "tamias.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Upload",
+			Handler:    _Tamias_Upload_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "tamias.proto",
 }
