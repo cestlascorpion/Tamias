@@ -8,9 +8,21 @@ service Tamias {
   rpc Upload(UploadReq) returns (UploadResp) {}
 }
 
+enum Manufacturer {
+  MF_UNKNOWN = 0;
+  XM = 1;
+}
+
+enum FileType {
+  FT_UNKNOWN = 0;
+  LARGE_ICON = 1;
+  BIG_PICTURE = 2;
+}
+
 message UploadReq {
-  string manufacturer = 1; // HW HO XM XMG OP OPG VV ...
-  bytes picture = 2;
+  Manufacturer manufacturer = 1;
+  FileType file_type = 2;
+  string file_url = 3;
 }
 
 message UploadResp {
