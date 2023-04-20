@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	testXMLargeIcon  = "https://i.328888.xyz/2023/04/11/ipFSlQ.jpeg"
-	testXMBigPicture = "https://i.328888.xyz/2023/04/11/ipFoxE.png"
+	testXMLargeIcon  = "https://i.328888.xyz/2023/04/20/iGiqTC.jpeg"
+	testXMBigPicture = "https://i.328888.xyz/2023/04/20/iGVZWP.png"
 )
 
 var (

@@ -36,15 +36,9 @@ func (s *Server) Upload(ctx context.Context, in *proto.UploadReq) (*proto.Upload
 		return out, errInvalidParameters
 	}
 
-	file, err := core.Download(in.FileUrl)
-	if err != nil {
-		log.Errorf("download %s err %+v", in.FileUrl, err)
-		return out, err
-	}
-
 	switch in.Manufacturer {
 	case proto.Manufacturer_XM:
-		uri, ttl, err := s.xmUpload(ctx, file, in.FileType)
+		uri, ttl, err := s.xmUpload(ctx, in.FileUrl, in.FileType)
 		if err != nil {
 			log.Errorf("xm upload err %+v", err)
 			return out, err
@@ -62,20 +56,32 @@ func (s *Server) Close(ctx context.Context) error {
 	return s.cache.Close(ctx)
 }
 
-func (s *Server) xmUpload(ctx context.Context, file []byte, fileType proto.FileType) (string, int64, error) {
-	var (
-		name string
-		err  error
-	)
+func (s *Server) xmUpload(ctx context.Context, fileUrl string, fileType proto.FileType) (string, int64, error) {
+	key := fmt.Sprintf("xm-%s-%s", fileUrl, fileType.String())
+	uri, ttl, err := s.cache.GetUri(ctx, key)
+	if err == nil {
+		log.Debugf("get %s from cache ok", key)
+		return uri, ttl, nil
+	}
 
+	log.Debugf("get %s from cache err %+v", key, err)
+	file, err := core.Download(fileUrl)
+	if err != nil {
+		log.Errorf("download %s err %+v", fileUrl, err)
+		return "", 0, err
+	}
+
+	var (
+		fileName string
+	)
 	switch fileType {
 	case proto.FileType_LARGE_ICON:
-		name, err = checkXMLargeIcon(ctx, file)
+		fileName, err = checkXMLargeIcon(ctx, file)
 		if err != nil {
 			return "", 0, err
 		}
 	case proto.FileType_BIG_PICTURE:
-		name, err = checkXMBigPicture(ctx, file)
+		fileName, err = checkXMBigPicture(ctx, file)
 		if err != nil {
 			return "", 0, err
 		}
@@ -84,21 +90,19 @@ func (s *Server) xmUpload(ctx context.Context, file []byte, fileType proto.FileT
 		return "", 0, errInvalidParameters
 	}
 
-	key := fmt.Sprintf("xm-%d-%s", fileType, name)
-	log.Debugf("xm file key %s", key)
-
-	uri, ttl, err := s.cache.GetUri(ctx, key)
-	if err == nil {
-		return uri, ttl, nil
-	}
-
-	log.Warnf("get %s from cache failed", key)
-	uri, ttl, err = core.XMUpload(ctx, file, name, fileType)
+	uri, ttl, err = core.XMUpload(ctx, file, fileName, fileType)
 	if err != nil {
 		log.Errorf("xm upload err %+v", err)
 		return "", 0, err
 	}
-	_ = s.cache.SetUri(ctx, key, uri, ttl)
+
+	err = s.cache.SetUri(ctx, key, uri, ttl)
+	if err != nil {
+		log.Warnf("set %s to cache err %+v", key, err)
+	} else {
+		log.Debugf("set %s to cache ok", key)
+	}
+
 	return uri, ttl, nil
 }
 
@@ -109,15 +113,15 @@ func checkXMLargeIcon(ctx context.Context, file []byte) (string, error) {
 		return "", errInvalidParameters
 	}
 
-	x, y, name, err := core.Parse(file)
+	x, y, format, err := core.Parse(file)
 	if err != nil {
 		log.Errorf("xm large icon decode image err %+v", err)
 		return "", errInvalidParameters
 	}
 
 	// PNG/JPEG/JPG
-	if name != "png" && name != "jpeg" && name != "jpg" {
-		log.Errorf("unknown format %s of xm large icon", name)
+	if format != "png" && format != "jpeg" && format != "jpg" {
+		log.Errorf("unknown format %s of xm large icon", format)
 		return "", errInvalidParameters
 	}
 
@@ -127,7 +131,7 @@ func checkXMLargeIcon(ctx context.Context, file []byte) (string, error) {
 		return "", errInvalidParameters
 	}
 
-	return fmt.Sprintf("%x.%s", md5.Sum(file), name), nil
+	return fmt.Sprintf("%x.%s", md5.Sum(file), format), nil
 }
 
 func checkXMBigPicture(ctx context.Context, file []byte) (string, error) {
@@ -137,15 +141,15 @@ func checkXMBigPicture(ctx context.Context, file []byte) (string, error) {
 		return "", errInvalidParameters
 	}
 
-	x, y, name, err := core.Parse(file)
+	x, y, format, err := core.Parse(file)
 	if err != nil {
 		log.Errorf("decode xm big picture err %+v", err)
 		return "", errInvalidParameters
 	}
 
 	// PNG/JPEG/JPG
-	if name != "png" && name != "jpeg" && name != "jpg" {
-		log.Errorf("unknown format %s of xm big picture", name)
+	if format != "png" && format != "jpeg" && format != "jpg" {
+		log.Errorf("unknown format %s of xm big picture", format)
 		return "", errInvalidParameters
 	}
 
@@ -155,7 +159,7 @@ func checkXMBigPicture(ctx context.Context, file []byte) (string, error) {
 		return "", errInvalidParameters
 	}
 
-	return fmt.Sprintf("%x.%s", md5.Sum(file), name), nil
+	return fmt.Sprintf("%x.%s", md5.Sum(file), format), nil
 }
 
 var (
